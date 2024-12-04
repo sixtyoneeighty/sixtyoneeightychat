@@ -8,8 +8,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gemini.vercel.ai"),
-  title: "Next.js Gemini Chatbot",
-  description: "Next.js chatbot template using the AI SDK and Gemini.",
+  title: "sixtyoneeighty",
+  description: "Built with next.js",
 };
 
 export default async function RootLayout({
@@ -18,8 +18,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <body className="antialiased bg-background">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -61,10 +61,11 @@ export function MultimodalInput({
   );
 
   const handleFileChange = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.files) return;
+    async (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (!target.files) return;
 
-      const files = Array.from(e.target.files);
+      const files = Array.from(target.files);
       const newAttachments: Array<Attachment> = [];
 
       for (const file of files) {
@@ -74,7 +75,6 @@ export function MultimodalInput({
             if (typeof e.target?.result === "string") {
               newAttachments.push({
                 name: file.name,
-                type: file.type,
                 url: e.target.result,
               });
               if (newAttachments.length === files.length) {
@@ -110,85 +110,86 @@ export function MultimodalInput({
   }, [input]);
 
   return (
-    <motion.form
-      className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 py-4 px-4 md:px-0"
-      onSubmit={handleSubmit}
+    <motion.div
+      className="fixed inset-x-0 bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-4 md:px-0"
       initial={{ y: 100 }}
       animate={{ y: 0 }}
     >
-      <div className="mx-auto w-full md:w-[500px] flex flex-col gap-4">
-        {attachments.length > 0 && (
-          <div className="flex flex-row gap-2 flex-wrap">
-            {attachments.map((attachment, index) => (
-              <div key={index} className="relative group">
-                <PreviewAttachment attachment={attachment} />
-                <button
-                  type="button"
-                  className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => {
-                    setAttachments((prev) =>
-                      prev.filter((_, i) => i !== index),
-                    );
-                  }}
-                >
-                  <div className="bg-white dark:bg-zinc-900 rounded-full p-1">
-                    <StopIcon className="size-3" />
-                  </div>
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+      <form onSubmit={handleSubmit}>
+        <div className="mx-auto w-full md:w-[500px] flex flex-col gap-4">
+          {attachments.length > 0 && (
+            <div className="flex flex-row gap-2 flex-wrap">
+              {attachments.map((attachment, index) => (
+                <div key={index} className="relative group">
+                  <PreviewAttachment attachment={attachment} />
+                  <button
+                    type="button"
+                    className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => {
+                      setAttachments((prev) =>
+                        prev.filter((_, i) => i !== index),
+                      );
+                    }}
+                  >
+                    <div className="bg-white dark:bg-zinc-900 rounded-full p-1">
+                      <StopIcon size={12} />
+                    </div>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
-        <div className="flex flex-row items-end gap-2">
-          <div className="flex-1">
-            <Textarea
-              ref={textAreaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Send a message..."
-              rows={rows}
-              className="resize-none"
-            />
-          </div>
+          <div className="flex flex-row items-end gap-2">
+            <div className="flex-1">
+              <Textarea
+                ref={textAreaRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Send a message..."
+                rows={rows}
+                className="resize-none"
+              />
+            </div>
 
-          <div className="flex flex-row gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-              onClick={() => {
-                const input = document.createElement("input");
-                input.type = "file";
-                input.multiple = true;
-                input.accept = "image/*";
-                input.onchange = handleFileChange;
-                input.click();
-              }}
-            >
-              <PaperclipIcon className="size-4" />
-            </Button>
-
-            {isLoading ? (
+            <div className="flex flex-row gap-2">
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
                 className="shrink-0"
-                onClick={stop}
+                onClick={() => {
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.multiple = true;
+                  input.accept = "image/*";
+                  input.onchange = handleFileChange;
+                  input.click();
+                }}
               >
-                <StopIcon className="size-4" />
+                <PaperclipIcon size={16} />
               </Button>
-            ) : (
-              <Button type="submit" size="icon" className="shrink-0">
-                <ArrowUpIcon className="size-4" />
-              </Button>
-            )}
+
+              {isLoading ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0"
+                  onClick={stop}
+                >
+                  <StopIcon size={16} />
+                </Button>
+              ) : (
+                <Button type="submit" size="icon" className="shrink-0">
+                  <ArrowUpIcon size={16} />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </motion.form>
+      </form>
+    </motion.div>
   );
 }

@@ -49,7 +49,7 @@ export async function generateSampleFlightSearchResults({
 }) {
   const { object: flightSearchResults } = await generateObject({
     model: geminiFlashModel,
-    prompt: `Generate search results for flights from ${origin} to ${destination}, limit to 4 results`,
+    : `Generate search results for flights from ${origin} to ${destination}, limit to 4 results`,
     output: "array",
     schema: z.object({
       id: z
