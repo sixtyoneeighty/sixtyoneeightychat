@@ -20,13 +20,13 @@ export const Overview = () => {
           <GPSIcon size={20} />
         </p>
         <p>
-          Meet Mojo, sixtyoneeighty's heart and soul. As our first (albeit virtual) employee, 
+          Meet Mojo, sixtyoneeighty&apos;s heart and soul. As our first (albeit virtual) employee, 
           Mojo brings a unique blend of wit, wisdom, and just the right amount of sarcasm to every conversation.
         </p>
         <p>
-          Feel free to chat with Mojo about anything that's on your mind - from technical challenges 
+          Feel free to chat with Mojo about anything that&apos;s on your mind - from technical challenges 
           to random musings. With an impressive memory and a knack for engaging conversations, 
-          Mojo's here to help, entertain, and occasionally throw in a clever quip or two.
+          Mojo&apos;s here to help, entertain, and occasionally throw in a clever quip or two.
         </p>
       </div>
     </motion.div>
