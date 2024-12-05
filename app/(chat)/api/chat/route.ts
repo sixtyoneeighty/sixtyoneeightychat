@@ -1,7 +1,6 @@
 // app/(chat)/api/chat/route.ts
+import { google } from "@ai-sdk/google";
 import { convertToCoreMessages, Message, streamText } from "ai";
-
-import { geminiProModel } from "@/ai";
 
 import { auth } from "@/app/(auth)/auth";
 
@@ -43,7 +42,7 @@ export async function POST(request: Request) {
   );
 
   const result = await streamText({
-    model: geminiProModel,
+    model: google("gemini-1.5-pro-002"),
     system: MOJO_SYSTEM_PROMPT,
     messages: coreMessages,
     onFinish: async ({ responseMessages }) => {
