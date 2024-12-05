@@ -58,7 +58,7 @@ export function Chat({
           />
         </div>
 
-        <div className="flex flex-row gap-2 relative items-end w-full md:max-w-[500px] max-w-[calc(100dvw-32px)] px-4 md:px-0">
+        <div className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] px-4 md:px-0">
           <MultimodalInput
             input={input}
             setInput={setInput}

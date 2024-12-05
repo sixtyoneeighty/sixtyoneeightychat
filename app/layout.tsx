@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/custom/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gemini.vercel.ai"),
+  metadataBase: new URL("https://chat.sixtyoneeighty.com"),
   title: "sixtyoneeighty",
   description: "Built with next.js",
 };

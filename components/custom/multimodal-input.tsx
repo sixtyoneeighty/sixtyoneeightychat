@@ -116,7 +116,7 @@ export function MultimodalInput({
       animate={{ y: 0 }}
     >
       <form onSubmit={handleSubmit}>
-        <div className="mx-auto w-full md:w-[500px] flex flex-col gap-4">
+        <div className="mx-auto w-full md:w-[800px] flex flex-col gap-4">
           {attachments.length > 0 && (
             <div className="flex flex-row gap-2 flex-wrap">
               {attachments.map((attachment, index) => (
