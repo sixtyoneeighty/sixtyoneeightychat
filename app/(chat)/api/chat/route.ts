@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   );
 
   const result = await streamText({
-    model: google("gemini-1.5-pro-002"),
+    model: google("gemini-exp-1206"),
     system: MOJO_SYSTEM_PROMPT,
     messages: coreMessages,
     onFinish: async ({ responseMessages }) => {
