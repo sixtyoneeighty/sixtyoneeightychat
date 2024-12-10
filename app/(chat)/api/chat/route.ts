@@ -22,15 +22,21 @@ const recentEventKeywords = [
   "now"
 ];
 
-const isRecentEventsQuery = (query: string): boolean => {
+const isRecentEventsQuery = (content: any): boolean => {
+  if (typeof content !== 'string') {
+    return false;
+  }
   return recentEventKeywords.some(keyword => 
-    query.toLowerCase().includes(keyword.toLowerCase())
+    content.toLowerCase().includes(keyword.toLowerCase())
   );
 };
 
-const getRecentInfo = async (query: string): Promise<string> => {
+const getRecentInfo = async (content: any): Promise<string> => {
+  if (typeof content !== 'string') {
+    return "";
+  }
   try {
-    const searchResponse = await tvly.searchQNA(query, {
+    const searchResponse = await tvly.searchQNA(content, {
       searchDepth: "advanced",
       topic: "news",
       days: 7, // Look back 7 days for recent events
