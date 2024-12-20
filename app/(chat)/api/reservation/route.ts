@@ -18,11 +18,15 @@ export async function GET(request: Request) {
   try {
     const reservation = await getReservationById({ id });
 
-    if (reservation.userId !== session.user.id) {
+    if (!reservation || reservation.length === 0) {
+      return new Response("Reservation not found!", { status: 404 });
+    }
+
+    if (reservation[0].user_id !== session.user.id) {
       return new Response("Unauthorized!", { status: 401 });
     }
 
-    return Response.json(reservation);
+    return Response.json(reservation[0]);
   } catch (error) {
     return new Response("An error occurred while processing your request!", {
       status: 500,
@@ -47,29 +51,23 @@ export async function PATCH(request: Request) {
   try {
     const reservation = await getReservationById({ id });
 
-    if (!reservation) {
+    if (!reservation || reservation.length === 0) {
       return new Response("Reservation not found!", { status: 404 });
     }
 
-    if (reservation.userId !== session.user.id) {
+    if (reservation[0].user_id !== session.user.id) {
       return new Response("Unauthorized!", { status: 401 });
     }
 
-    if (reservation.hasCompletedPayment) {
+    if (reservation[0].hasCompletedPayment) {
       return new Response("Reservation is already paid!", { status: 409 });
     }
 
-    const { magicWord } = await request.json();
+    const { hasCompletedPayment } = await request.json();
 
-    if (magicWord.toLowerCase() !== "vercel") {
-      return new Response("Invalid magic word!", { status: 400 });
-    }
+    await updateReservation({ id, hasCompletedPayment });
 
-    const updatedReservation = await updateReservation({
-      id,
-      hasCompletedPayment: true,
-    });
-    return Response.json(updatedReservation);
+    return new Response(null, { status: 204 });
   } catch (error) {
     console.error("Error updating reservation:", error);
     return new Response("An error occurred while processing your request!", {
