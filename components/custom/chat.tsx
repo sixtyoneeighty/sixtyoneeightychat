@@ -34,11 +34,11 @@ export function Chat({
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   return (
-    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background chat-container">
-      <div className="flex flex-col justify-between items-center gap-4 w-full max-w-4xl px-4">
+    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background">
+      <div className="flex flex-col justify-between items-center gap-4">
         <div
           ref={messagesContainerRef}
-          className="flex flex-col gap-4 h-full w-full items-center overflow-y-scroll message-list"
+          className="flex flex-col gap-4 h-full w-dvw items-center overflow-y-scroll"
         >
           {messages.length === 0 && <Overview />}
 
@@ -47,25 +47,30 @@ export function Chat({
               key={message.id}
               chatId={id}
               role={message.role}
-              content={typeof message.content === 'string' ? message.content : JSON.stringify(message.content)}
+              content={message.content}
               attachments={message.experimental_attachments}
-              className="message-container w-full"
             />
           ))}
 
-          <div ref={messagesEndRef} />
+          <div
+            ref={messagesEndRef}
+            className="shrink-0 min-w-[24px] min-h-[24px]"
+          />
         </div>
 
-        <MultimodalInput
-          input={input}
-          setInput={setInput}
-          attachments={attachments}
-          setAttachments={setAttachments}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          stop={stop}
-          className="w-full chat-input-container"
-        />
+        <div className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] px-4 md:px-0">
+          <MultimodalInput
+            input={input}
+            setInput={setInput}
+            handleSubmit={handleSubmit}
+            isLoading={isLoading}
+            stop={stop}
+            attachments={attachments}
+            setAttachments={setAttachments}
+            messages={messages}
+            append={append}
+          />
+        </div>
       </div>
     </div>
   );
