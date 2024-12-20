@@ -30,7 +30,11 @@ export default function Page() {
       toast.error("Failed validating your submission!");
     } else if (state.status === "success") {
       toast.success("Account created successfully");
-      router.refresh();
+      // Add a small delay before navigation to allow the toast to show
+      setTimeout(() => {
+        router.push('/');  // Navigate to home page
+        router.refresh();
+      }, 1000);
     }
   }, [state, router]);
 

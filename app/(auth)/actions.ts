@@ -67,19 +67,26 @@ export const register = async (
       return { status: "user_exists" } as RegisterActionState;
     } else {
       await createUser(validatedData.email, validatedData.password);
-      await signIn("credentials", {
-        email: validatedData.email,
-        password: validatedData.password,
-        redirect: false,
-      });
+      
+      try {
+        await signIn("credentials", {
+          email: validatedData.email,
+          password: validatedData.password,
+          redirect: false,
+        });
+      } catch (signInError) {
+        console.error("Sign in error after registration:", signInError);
+        // Still return success as the account was created
+        return { status: "success" };
+      }
 
       return { status: "success" };
     }
   } catch (error) {
+    console.error("Registration error:", error);
     if (error instanceof z.ZodError) {
       return { status: "invalid_data" };
     }
-
     return { status: "failed" };
   }
 };
