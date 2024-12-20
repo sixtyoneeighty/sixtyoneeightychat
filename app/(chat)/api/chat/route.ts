@@ -78,7 +78,13 @@ export async function POST(request: Request): Promise<Response> {
   // Handle greetings and initial responses
   if (messages.length === 1 && isGreeting(lastMessage.content)) {
     const response = generateInitialResponse(lastMessage.content);
-    return new StreamingTextResponse(response);
+    const stream = new ReadableStream({
+      async start(controller) {
+        controller.enqueue(new TextEncoder().encode(response));
+        controller.close();
+      },
+    });
+    return new StreamingTextResponse(stream);
   }
 
   // Check for band opinions in the message
