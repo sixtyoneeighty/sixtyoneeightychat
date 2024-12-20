@@ -2,10 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './punk-theme.css';
+
 :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 34, 34, 34;
+    --background-end-rgb: 0, 0, 0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -127,4 +129,36 @@
     .skeleton-div {
         @apply bg-foreground/20 animate-pulse;
     }
+}
+
+.flex-col {
+    @apply bg-opacity-90;
+}
+
+.message-container {
+    @apply message;
+}
+
+.user .message-container {
+    @apply message user;
+}
+
+.assistant .message-container {
+    @apply message assistant;
+}
+
+.textarea {
+    @apply chat-input;
+}
+
+.button {
+    @apply punk-button;
+}
+
+.markdown-body {
+    font-family: 'Special Elite', cursive;
+}
+
+.loading {
+    @apply loading-punk;
 }
