@@ -41,8 +41,8 @@ export function Chat({
           <Image
             src="/images/prcb.png"
             alt="PRCB Logo"
-            width={800}
-            height={800}
+            width={600}
+            height={600}
             className="opacity-[0.15] select-none"
             priority
           />

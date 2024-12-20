@@ -1,10 +1,22 @@
 import { Metadata } from "next";
 import { Toaster } from "sonner";
+import { Permanent_Marker, Roboto_Condensed } from "next/font/google";
 
 import { Navbar } from "@/components/custom/navbar";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 
 import "./globals.css";
+
+const permanentMarker = Permanent_Marker({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-permanent-marker",
+});
+
+const robotoCondensed = Roboto_Condensed({
+  subsets: ["latin"],
+  variable: "--font-roboto-condensed",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chat.sixtyoneeighty.com"),
@@ -19,7 +31,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased bg-background">
+      <body className={`antialiased bg-background ${permanentMarker.variable} ${robotoCondensed.variable} font-roboto`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
