@@ -1,6 +1,7 @@
 // app/(chat)/api/chat/route.ts
 import { google } from "@ai-sdk/google";
 import { convertToCoreMessages, Message, StreamingTextResponse } from "ai";
+import { generateText, streamText } from "ai";
 
 import { auth } from "@/app/(auth)/auth";
 import { saveChat } from "@/db/queries";
@@ -120,25 +121,27 @@ export async function POST(request: Request): Promise<Response> {
     ]
   });
 
-  const response = await model.chat({
+  const prompt = `${PUNKBOT_SYSTEM_PROMPT}\n\nUser: ${lastMessageContent}`;
+  
+  const response = await streamText({
+    model,
+    prompt,
     messages: coreMessages,
-    system: PUNKBOT_SYSTEM_PROMPT,
   });
 
   if (response) {
-    const responseMessages = response.messages ?? [];
     if (session.user && session.user.id) {
       try {
         await saveChat({
           id: json.id,
-          messages: [...coreMessages, ...responseMessages],
+          messages: [...coreMessages, { role: 'assistant', content: response.toString() }],
           userId: session.user.id,
         });
       } catch (error) {
         console.error("Failed to save chat:", error);
       }
     }
-    return new StreamingTextResponse(response.stream);
+    return new StreamingTextResponse(response);
   }
 
   return new Response("No response generated", { status: 500 });
