@@ -111,7 +111,7 @@ export function MultimodalInput({
 
   return (
     <motion.div
-      className="fixed inset-x-0 bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-4 md:px-0"
+      className="fixed inset-x-0 bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-2 md:px-0"
       initial={{ y: 100 }}
       animate={{ y: 0 }}
     >
