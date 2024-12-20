@@ -42,15 +42,15 @@ export default function Page() {
       <div className="w-full max-w-md overflow-hidden rounded-2xl flex flex-col gap-8">
         <div className="flex flex-col items-center justify-center gap-6 px-4 text-center sm:px-16">
           <div className="flex flex-col gap-2">
-            <h1 className="punk-title text-3xl dark:text-zinc-50 transform -rotate-2">
+            <h1 className="punk-title text-3xl dark:text-zinc-50 -rotate-2">
               Punk Rock Chatbot
             </h1>
-            <h3 className="text-xl font-bold dark:text-zinc-50 transform rotate-1">
-              An AI tribute to the mid-late 90's punk rock scene
+            <h3 className="text-xl font-bold dark:text-zinc-50 rotate-1">
+              An AI tribute to the mid-late 90&apos;s punk rock scene
             </h3>
           </div>
           <p className="text-sm text-gray-500 dark:text-zinc-400 max-w-sm">
-           A digital recreation of that friend from high school that knew all the bands, and was at every show. 
+            A digital recreation of that friend from high school that knew all the bands, and was at every show. 
           </p>
         </div>
         <AuthForm action={handleSubmit} defaultEmail={email}>

@@ -37,14 +37,13 @@ export function Chat({
   return (
     <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background">
       <div className="flex flex-col justify-between items-center gap-4 w-full relative">
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
           <Image
             src="/images/prcb.png"
-            alt="PRCB Logo"
+            alt="Chat Background"
             width={600}
             height={600}
-            className="opacity-[0.15] select-none"
-            priority
+            className="opacity-15"
           />
         </div>
         <div
