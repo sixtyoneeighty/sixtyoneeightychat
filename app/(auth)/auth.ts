@@ -11,12 +11,7 @@ interface ExtendedSession extends Session {
   user: User;
 }
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+const handler = NextAuth({
   ...authConfig,
   debug: true, // Enable debug logs
   providers: [
@@ -39,7 +34,6 @@ export const {
       if (user) {
         token.id = user.id;
       }
-
       return token;
     },
     async session({
@@ -52,8 +46,10 @@ export const {
       if (session.user) {
         session.user.id = token.id as string;
       }
-
       return session;
     },
   },
 });
+
+export const { auth, signIn, signOut } = handler;
+export const { GET, POST } = handler.handlers;
