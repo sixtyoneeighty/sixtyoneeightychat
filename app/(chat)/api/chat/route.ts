@@ -125,23 +125,23 @@ export async function POST(request: Request): Promise<Response> {
       ]
     });
 
-    const prompt = `${PUNKBOT_SYSTEM_PROMPT}\n\nUser: ${lastMessageContent}`;
-    
     const { text } = await generateText({
       model,
-      prompt,
       messages: coreMessages,
+      system: PUNKBOT_SYSTEM_PROMPT,
     });
 
     if (!text) {
       throw new Error("No response generated");
     }
 
+    const timestamp = new Date();
     try {
       await saveChat({
         id: json.id,
         messages: [...coreMessages, { role: 'assistant', content: text }],
         userId: session.user.id,
+        createdAt: timestamp,
       });
     } catch (error) {
       console.error("Failed to save chat:", error);
