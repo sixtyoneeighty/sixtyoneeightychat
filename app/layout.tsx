@@ -2,13 +2,14 @@ import { Metadata } from "next";
 import { Toaster } from "sonner";
 
 import { Navbar } from "@/components/custom/navbar";
+import { AuthProvider } from "@/components/custom/session-provider";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.sixtyoneeighty.com"),
-  title: "sixtyoneeighty",
+  metadataBase: new URL("https://punkrockchatbot.sixtyoneeightyai.com"),
+  title: "PunkBot",
   description: "Punk Rock Chatbot",
 };
 
@@ -26,9 +27,11 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster position="top-center" />
-          <Navbar />
-          {children}
+          <AuthProvider>
+            <Toaster position="top-center" />
+            <Navbar />
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
