@@ -1,6 +1,8 @@
 import { compare } from "bcrypt-ts";
 import NextAuth, { User, Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 
 import { getUser } from "@/db/queries";
 
@@ -18,6 +20,14 @@ export const {
 } = NextAuth({
   ...authConfig,
   providers: [
+    GitHub({
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+    }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     Credentials({
       credentials: {},
       async authorize({ email, password }: any) {
