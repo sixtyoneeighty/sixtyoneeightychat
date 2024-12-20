@@ -1,7 +1,6 @@
 import { compare } from "bcrypt-ts";
 import NextAuth, { User, Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
 
 import { getUser } from "@/db/queries";
 
@@ -11,21 +10,14 @@ interface ExtendedSession extends Session {
   user: User;
 }
 
-const handler = NextAuth({
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+} = NextAuth({
   ...authConfig,
-  debug: true,
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code"
-        }
-      }
-    }),
     Credentials({
       credentials: {},
       async authorize({ email, password }: any) {
@@ -36,15 +28,12 @@ const handler = NextAuth({
       },
     }),
   ],
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }
+
       return token;
     },
     async session({
@@ -57,10 +46,8 @@ const handler = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
       }
+
       return session;
     },
   },
 });
-
-export const { auth, signIn, signOut } = handler;
-export const { GET, POST } = handler.handlers;
