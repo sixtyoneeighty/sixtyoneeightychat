@@ -21,6 +21,24 @@
         font-family: 'Special Elite', cursive;
         color: var(--punk-text);
     }
+
+    /* Custom scrollbar styles */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--punk-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--punk-primary);
+        border: 2px solid var(--punk-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--punk-accent);
+    }
 }
 
 @layer components {
@@ -30,7 +48,7 @@
     }
 
     .message-list {
-        @apply scrollbar-thin scrollbar-thumb-[#ff3333] scrollbar-track-[#222];
+        @apply overflow-y-auto;
     }
 
     .message-base {
@@ -52,7 +70,7 @@
     }
 
     .chat-input {
-        @apply bg-[#222]/90 border-2 border-[#ff3333] font-['Special_Elite'];
+        @apply bg-[#222]/90 border-2 border-[#ff3333] font-punk-text;
     }
 
     .chat-input:focus {
@@ -60,7 +78,7 @@
     }
 
     .punk-button {
-        @apply bg-[#ff3333] text-white font-['Permanent_Marker'] uppercase px-4 py-2 relative overflow-hidden transition-all duration-300;
+        @apply bg-[#ff3333] text-white font-punk uppercase px-4 py-2 relative overflow-hidden transition-all duration-300;
     }
 
     .punk-button::before {
@@ -80,7 +98,7 @@
     }
 
     .markdown-body {
-        @apply font-['Special_Elite'];
+        @apply font-punk-text;
     }
 
     .loading-punk {
