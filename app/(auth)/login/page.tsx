@@ -39,11 +39,18 @@ export default function Page() {
 
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-background">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl flex flex-col gap-12">
-        <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
-          <h3 className="text-xl font-semibold dark:text-zinc-50">Sign In</h3>
-          <p className="text-sm text-gray-500 dark:text-zinc-400">
-            Use your email and password to sign in
+      <div className="w-full max-w-md overflow-hidden rounded-2xl flex flex-col gap-8">
+        <div className="flex flex-col items-center justify-center gap-6 px-4 text-center sm:px-16">
+          <div className="flex flex-col gap-2">
+            <h1 className="punk-title text-3xl dark:text-zinc-50 transform -rotate-2">
+              Punk Rock Chatbot
+            </h1>
+            <h3 className="text-xl font-bold dark:text-zinc-50 transform rotate-1">
+              Your AI Wingman for All Things Punk
+            </h3>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-zinc-400 max-w-sm">
+            Ready to dive into the world of power chords and mosh pits? Sign in below to start your punk rock journey.
           </p>
         </div>
         <AuthForm action={handleSubmit} defaultEmail={email}>

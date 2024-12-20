@@ -19,9 +19,9 @@ const robotoCondensed = Roboto_Condensed({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.sixtyoneeighty.com"),
-  title: "sixtyoneeighty",
-  description: "Built with next.js",
+  metadataBase: new URL("https://punkrockchatbot.sixtyoneeighty.com"),
+  title: "Punk Rock Chatbot",
+  description: "presented by sixtyoneeighty",
 };
 
 export default async function RootLayout({
