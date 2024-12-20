@@ -67,90 +67,100 @@ Don't be afraid to swear or be argumentative when discussing music opinions, but
 When discussing songs or albums, focus on the musical aspects - the songwriting, instrumentation, performance, and overall artistic merit. Ground your arguments in factual information and musical analysis rather than just opinions.`;
 
 export async function POST(request: Request): Promise<Response> {
-  const session = await auth();
-  if (!session?.user) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
-  const json = await request.json();
-  const messages = json.messages as Message[];
-  const lastMessage = messages[messages.length - 1];
+    const json = await request.json();
+    const messages = json.messages as Message[];
+    const lastMessage = messages[messages.length - 1];
 
-  // Handle greetings and initial responses
-  if (messages.length === 1 && isGreeting(lastMessage.content)) {
-    const response = generateInitialResponse(lastMessage.content);
+    // Handle greetings and initial responses
+    if (messages.length === 1 && isGreeting(lastMessage.content)) {
+      const response = generateInitialResponse(lastMessage.content);
+      const stream = new ReadableStream({
+        async start(controller) {
+          controller.enqueue(new TextEncoder().encode(response));
+          controller.close();
+        },
+      });
+      return new StreamingTextResponse(stream);
+    }
+
+    // Check for band opinions in the message
+    const messageWords = lastMessage.content.split(/\s+/);
+    for (const word of messageWords) {
+      const opinion = getBandOpinion(word);
+      if (opinion) {
+        messages[messages.length - 1].content += `\n\nNote: ${opinion}`;
+        break;
+      }
+    }
+
+    const coreMessages = convertToCoreMessages(messages).filter(
+      (message) => message.content.length > 0,
+    );
+
+    const lastMessageContent = coreMessages[coreMessages.length - 1].content;
+    let additionalContext = "";
+
+    if (isRecentEventsQuery(lastMessageContent)) {
+      additionalContext = await getRecentInfo(lastMessageContent);
+      if (additionalContext) {
+        coreMessages[coreMessages.length - 1].content += "\n\nRecent context: " + additionalContext;
+      }
+    }
+
+    const model = google("gemini-exp-1206", {
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' }
+      ]
+    });
+
+    const prompt = `${PUNKBOT_SYSTEM_PROMPT}\n\nUser: ${lastMessageContent}`;
+    
+    const { text } = await generateText({
+      model,
+      prompt,
+      messages: coreMessages,
+    });
+
+    if (!text) {
+      throw new Error("No response generated");
+    }
+
+    try {
+      await saveChat({
+        id: json.id,
+        messages: [...coreMessages, { role: 'assistant', content: text }],
+        userId: session.user.id,
+      });
+    } catch (error) {
+      console.error("Failed to save chat:", error);
+      // Continue even if save fails
+    }
+
     const stream = new ReadableStream({
       async start(controller) {
-        controller.enqueue(new TextEncoder().encode(response));
+        controller.enqueue(new TextEncoder().encode(text));
         controller.close();
       },
     });
+
     return new StreamingTextResponse(stream);
+  } catch (error) {
+    console.error("Error in chat endpoint:", error);
+    return new Response(
+      JSON.stringify({ error: "Failed to generate response" }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
-
-  // Check for band opinions in the message
-  const messageWords = lastMessage.content.split(/\s+/);
-  for (const word of messageWords) {
-    const opinion = getBandOpinion(word);
-    if (opinion) {
-      messages[messages.length - 1].content += `\n\nNote: ${opinion}`;
-      break;
-    }
-  }
-
-  const coreMessages = convertToCoreMessages(messages).filter(
-    (message) => message.content.length > 0,
-  );
-
-  const lastMessageContent = coreMessages[coreMessages.length - 1].content;
-  let additionalContext = "";
-
-  if (isRecentEventsQuery(lastMessageContent)) {
-    additionalContext = await getRecentInfo(lastMessageContent);
-    if (additionalContext) {
-      coreMessages[coreMessages.length - 1].content += "\n\nRecent context: " + additionalContext;
-    }
-  }
-
-  const model = google("gemini-exp-1206", {
-    safetySettings: [
-      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' }
-    ]
-  });
-
-  const prompt = `${PUNKBOT_SYSTEM_PROMPT}\n\nUser: ${lastMessageContent}`;
-  
-  const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        const { text } = await generateText({
-          model,
-          prompt,
-          messages: coreMessages,
-        });
-
-        if (session.user && session.user.id) {
-          try {
-            await saveChat({
-              id: json.id,
-              messages: [...coreMessages, { role: 'assistant', content: text }],
-              userId: session.user.id,
-            });
-          } catch (error) {
-            console.error("Failed to save chat:", error);
-          }
-        }
-
-        controller.enqueue(new TextEncoder().encode(text));
-        controller.close();
-      } catch (error) {
-        controller.error(error);
-      }
-    },
-  });
-
-  return new StreamingTextResponse(stream);
 }
