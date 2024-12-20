@@ -9,14 +9,14 @@ import { AuthForm } from "@/components/custom/auth-form";
 import { GoogleSignInButton } from "@/components/custom/google-signin-button";
 import { SubmitButton } from "@/components/custom/submit-button";
 
-import { signup, SignupActionState } from "../actions";
+import { register, RegisterActionState } from "../actions";
 
 export default function Page() {
   const router = useRouter();
   const [email, setEmail] = useState("");
 
-  const [state, formAction] = useActionState<SignupActionState, FormData>(
-    signup,
+  const [state, formAction] = useActionState<RegisterActionState, FormData>(
+    register,
     {
       status: "idle",
     },
@@ -27,6 +27,8 @@ export default function Page() {
       toast.error("Failed to create account!");
     } else if (state.status === "invalid_data") {
       toast.error("Failed validating your submission!");
+    } else if (state.status === "user_exists") {
+      toast.error("An account with this email already exists!");
     } else if (state.status === "success") {
       router.refresh();
     }
