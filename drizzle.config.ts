@@ -7,9 +7,11 @@ config({
 
 export default defineConfig({
   schema: "./db/schema.ts",
-  out: "./lib/drizzle",
-  dialect: "postgresql",
+  out: "./drizzle",
+  driver: "pg",
   dbCredentials: {
-    url: process.env.POSTGRES_URL!,
+    connectionString: process.env.POSTGRES_URL!,
   },
+  verbose: true,
+  strict: true
 });
