@@ -9,7 +9,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://chat.sixtyoneeighty.com"),
   title: "sixtyoneeighty",
-  description: "Punk Rock Chatbot",
+  description: "Built with next.js",
 };
 
 export default async function RootLayout({
