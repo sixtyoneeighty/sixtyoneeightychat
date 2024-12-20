@@ -95,15 +95,26 @@ export function MultimodalInput({
     if (textAreaRef.current) {
       const lineHeight = 24;
       const padding = 16;
+      const minHeight = lineHeight + padding; // Single line height
       const maxHeight = 200;
+
+      // Reset height to auto to get the correct scrollHeight
+      textAreaRef.current.style.height = 'auto';
+
+      // Calculate new height
+      const scrollHeight = textAreaRef.current.scrollHeight;
+      const newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
+
+      // Set the new height
+      textAreaRef.current.style.height = `${newHeight}px`;
+
+      // Calculate rows for the textarea
       const newRows = Math.min(
         Math.max(
-          Math.ceil(
-            (textAreaRef.current.scrollHeight - padding) / lineHeight,
-          ),
-          1,
+          Math.ceil((scrollHeight - padding) / lineHeight),
+          1
         ),
-        Math.floor(maxHeight / lineHeight),
+        Math.floor(maxHeight / lineHeight)
       );
       setRows(newRows);
     }
@@ -149,7 +160,7 @@ export function MultimodalInput({
                 onKeyDown={handleKeyDown}
                 placeholder="Send a message..."
                 rows={rows}
-                className="resize-none"
+                className="resize-none min-h-[40px] transition-all duration-200 ease-in-out"
               />
             </div>
 
