@@ -59,13 +59,13 @@ export async function PATCH(request: Request) {
       return new Response("Unauthorized!", { status: 401 });
     }
 
-    if (reservation[0].hasCompletedPayment) {
+    if (reservation[0].has_completed_payment) {
       return new Response("Reservation is already paid!", { status: 409 });
     }
 
-    const { hasCompletedPayment } = await request.json();
+    const { has_completed_payment } = await request.json();
 
-    await updateReservation({ id, hasCompletedPayment });
+    await updateReservation({ id, has_completed_payment });
 
     return new Response(null, { status: 204 });
   } catch (error) {

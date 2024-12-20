@@ -130,15 +130,15 @@ export async function getReservationById({ id }: { id: string }) {
 
 export async function updateReservation({
   id,
-  hasCompletedPayment,
+  has_completed_payment,
 }: {
   id: string;
-  hasCompletedPayment: boolean;
+  has_completed_payment: boolean;
 }) {
   try {
     return await db
       .update(reservation)
-      .set({ has_completed_payment: hasCompletedPayment })
+      .set({ has_completed_payment })
       .where(eq(reservation.id, id));
   } catch (error) {
     console.error("Failed to update reservation in database");
