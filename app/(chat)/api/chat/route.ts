@@ -1,6 +1,6 @@
 // app/(chat)/api/chat/route.ts
 import { google } from "@ai-sdk/google";
-import { convertToCoreMessages, Message, streamText } from "ai";
+import { convertToCoreMessages, Message, StreamingTextResponse } from "ai";
 
 import { auth } from "@/app/(auth)/auth";
 import { saveChat } from "@/db/queries";
@@ -65,7 +65,7 @@ Don't be afraid to swear or be argumentative when discussing music opinions, but
 
 When discussing songs or albums, focus on the musical aspects - the songwriting, instrumentation, performance, and overall artistic merit. Ground your arguments in factual information and musical analysis rather than just opinions.`;
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   const session = await auth();
   if (!session?.user) {
     return new Response("Unauthorized", { status: 401 });
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
   // Handle greetings and initial responses
   if (messages.length === 1 && isGreeting(lastMessage.content)) {
     const response = generateInitialResponse(lastMessage.content);
-    return streamText(response);
+    return new StreamingTextResponse(response);
   }
 
   // Check for band opinions in the message
@@ -95,42 +95,36 @@ export async function POST(request: Request) {
     (message) => message.content.length > 0,
   );
 
-  const latestMessage = coreMessages[coreMessages.length - 1];
+  const lastMessageContent = coreMessages[coreMessages.length - 1].content;
   let additionalContext = "";
-  
-  if (latestMessage && isRecentEventsQuery(latestMessage.content)) {
-    additionalContext = await getRecentInfo(latestMessage.content);
+
+  if (isRecentEventsQuery(lastMessageContent)) {
+    additionalContext = await getRecentInfo(lastMessageContent);
+    if (additionalContext) {
+      coreMessages[coreMessages.length - 1].content += "\n\nRecent context: " + additionalContext;
+    }
   }
 
-  const systemPrompt = additionalContext 
-    ? `${PUNKBOT_SYSTEM_PROMPT}\n\nRecent information from reliable sources: ${additionalContext}`
-    : PUNKBOT_SYSTEM_PROMPT;
-
-  const result = await streamText({
-    model: google("gemini-exp-1206", {
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' }
-      ]
-    }),
-    system: systemPrompt,
+  const response = await google.chat({
     messages: coreMessages,
-    onFinish: async ({ responseMessages }) => {
-      if (session.user && session.user.id) {
-        try {
-          await saveChat({
-            id: json.id,
-            messages: [...coreMessages, ...responseMessages],
-            userId: session.user.id,
-          });
-        } catch (error) {
-          console.error("Failed to save chat");
-        }
-      }
-    },
+    system: PUNKBOT_SYSTEM_PROMPT,
   });
 
-  return result.toDataStreamResponse({});
+  if (response) {
+    const responseMessages = response.messages ?? [];
+    if (session.user && session.user.id) {
+      try {
+        await saveChat({
+          id: json.id,
+          messages: [...coreMessages, ...responseMessages],
+          userId: session.user.id,
+        });
+      } catch (error) {
+        console.error("Failed to save chat:", error);
+      }
+    }
+    return new StreamingTextResponse(response.stream);
+  }
+
+  return new Response("No response generated", { status: 500 });
 }
