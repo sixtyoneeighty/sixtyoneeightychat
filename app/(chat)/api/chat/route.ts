@@ -1,7 +1,7 @@
 // app/(chat)/api/chat/route.ts
 import { google } from "@ai-sdk/google";
 import { convertToCoreMessages, Message, StreamingTextResponse } from "ai";
-import { generateText, streamText } from "ai";
+import { generateText } from "ai";
 
 import { auth } from "@/app/(auth)/auth";
 import { saveChat } from "@/db/queries";
@@ -123,26 +123,34 @@ export async function POST(request: Request): Promise<Response> {
 
   const prompt = `${PUNKBOT_SYSTEM_PROMPT}\n\nUser: ${lastMessageContent}`;
   
-  const response = await streamText({
-    model,
-    prompt,
-    messages: coreMessages,
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const { text } = await generateText({
+          model,
+          prompt,
+          messages: coreMessages,
+        });
+
+        if (session.user && session.user.id) {
+          try {
+            await saveChat({
+              id: json.id,
+              messages: [...coreMessages, { role: 'assistant', content: text }],
+              userId: session.user.id,
+            });
+          } catch (error) {
+            console.error("Failed to save chat:", error);
+          }
+        }
+
+        controller.enqueue(new TextEncoder().encode(text));
+        controller.close();
+      } catch (error) {
+        controller.error(error);
+      }
+    },
   });
 
-  if (response) {
-    if (session.user && session.user.id) {
-      try {
-        await saveChat({
-          id: json.id,
-          messages: [...coreMessages, { role: 'assistant', content: response.toString() }],
-          userId: session.user.id,
-        });
-      } catch (error) {
-        console.error("Failed to save chat:", error);
-      }
-    }
-    return new StreamingTextResponse(response);
-  }
-
-  return new Response("No response generated", { status: 500 });
+  return new StreamingTextResponse(stream);
 }
