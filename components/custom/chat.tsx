@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { Message as PreviewMessage } from "@/components/custom/message";
 import { useScrollToBottom } from "@/components/custom/use-scroll-to-bottom";
+import Image from "next/image";
 
 import { MultimodalInput } from "./multimodal-input";
 import { Overview } from "./overview";
@@ -35,10 +36,20 @@ export function Chat({
 
   return (
     <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background">
-      <div className="flex flex-col justify-between items-center gap-4">
+      <div className="flex flex-col justify-between items-center gap-4 w-full relative">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <Image
+            src="/images/prcb.png"
+            alt="PRCB Logo"
+            width={800}
+            height={800}
+            className="opacity-[0.15] select-none"
+            priority
+          />
+        </div>
         <div
           ref={messagesContainerRef}
-          className="flex flex-col gap-4 h-full w-dvw items-center overflow-y-scroll"
+          className="flex flex-col gap-4 h-full w-dvw items-center overflow-y-scroll relative"
         >
           {messages.length === 0 && <Overview />}
 
