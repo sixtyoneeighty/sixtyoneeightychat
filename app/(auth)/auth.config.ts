@@ -3,37 +3,34 @@ import { NextAuthConfig } from "next-auth";
 export const authConfig = {
   pages: {
     signIn: "/login",
-    newUser: "/",
+    error: "/login",
   },
-  providers: [
-    // added later in auth.ts since it requires bcrypt which is only compatible with Node.js
-    // while this file is also used in non-Node.js environments
-  ],
+  providers: [],
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       let isLoggedIn = !!auth?.user;
       let isOnChat = nextUrl.pathname.startsWith("/");
-      let isOnRegister = nextUrl.pathname.startsWith("/register");
       let isOnLogin = nextUrl.pathname.startsWith("/login");
+      let isOnSignup = nextUrl.pathname.startsWith("/signup");
+      let isAuthRoute = nextUrl.pathname.startsWith("/api/auth");
 
-      if (isLoggedIn && (isOnLogin || isOnRegister)) {
+      if (isAuthRoute) return true;
+
+      if (isLoggedIn && (isOnLogin || isOnSignup)) {
         return Response.redirect(new URL("/", nextUrl));
       }
 
-      if (isOnRegister || isOnLogin) {
-        return true; // Always allow access to register and login pages
+      if (isOnLogin || isOnSignup) {
+        return true;
       }
 
       if (isOnChat) {
         if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
-      }
-
-      if (isLoggedIn) {
-        return Response.redirect(new URL("/", nextUrl));
+        return Response.redirect(new URL("/login", nextUrl));
       }
 
       return true;
     },
   },
+  trustHost: true,
 } satisfies NextAuthConfig;

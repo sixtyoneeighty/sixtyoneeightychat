@@ -13,11 +13,18 @@ interface ExtendedSession extends Session {
 
 const handler = NextAuth({
   ...authConfig,
-  debug: true, // Enable debug logs
+  debug: true,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
     Credentials({
       credentials: {},
@@ -29,6 +36,10 @@ const handler = NextAuth({
       },
     }),
   ],
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
