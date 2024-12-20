@@ -14,17 +14,19 @@ export function Message({
   className,
 }: {
   chatId: string;
-  role: "system" | "user" | "assistant" | "function";
+  role: string;
   content: string;
   attachments?: Array<Attachment>;
   className?: string;
 }) {
+  const isAssistantStyle = (r: string) => r === 'assistant' || r === 'system' || r === 'function' || r === 'tool' || r === 'data';
+
   return (
     <div
-      className={`flex flex-col w-full px-4 py-2 message-container ${role === "user" ? "user" : "assistant"} ${className}`}
+      className={`flex flex-col w-full px-4 py-2 message-container ${isAssistantStyle(role) ? "assistant" : "user"} ${className}`}
     >
       <div className="flex items-center gap-2 mb-2">
-        <div className="font-['Permanent_Marker'] text-[#ff3333] uppercase">
+        <div className="font-punk text-punk-primary uppercase">
           {role === "user" ? "You" : "Punk Bot"}
         </div>
       </div>

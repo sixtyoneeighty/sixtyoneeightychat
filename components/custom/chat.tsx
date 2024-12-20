@@ -47,7 +47,7 @@ export function Chat({
               key={message.id}
               chatId={id}
               role={message.role}
-              content={message.content}
+              content={typeof message.content === 'string' ? message.content : JSON.stringify(message.content)}
               attachments={message.experimental_attachments}
               className="message-container w-full"
             />
