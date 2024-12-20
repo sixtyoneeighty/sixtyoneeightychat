@@ -46,11 +46,11 @@ export default function Page() {
               Punk Rock Chatbot
             </h1>
             <h3 className="text-xl font-bold dark:text-zinc-50 transform rotate-1">
-              Your AI Wingman for All Things Punk
+              An AI tribute to the mid-late 90's punk rock scene
             </h3>
           </div>
           <p className="text-sm text-gray-500 dark:text-zinc-400 max-w-sm">
-            Ready to dive into the world of power chords and mosh pits? Sign in below to start your punk rock journey.
+           A digital recreation of that friend from high school that knew all the bands, and was at every show. 
           </p>
         </div>
         <AuthForm action={handleSubmit} defaultEmail={email}>
