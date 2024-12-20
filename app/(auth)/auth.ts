@@ -1,6 +1,7 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { compare } from "bcrypt-ts";
 import NextAuth from "next-auth";
+import type { Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 import { db } from "@/db/db";
@@ -10,15 +11,15 @@ import { eq } from "drizzle-orm";
 import { authConfig } from "./auth.config";
 
 interface ExtendedSession extends Session {
-  user: User;
+  user: {
+    id: string;
+    email: string;
+    name?: string | null;
+    image?: string | null;
+  };
 }
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
   session: { strategy: "jwt" },
   ...authConfig,
@@ -26,12 +27,17 @@ export const {
     Credentials({
       async authorize({ email, password }: any) {
         const [user] = await db.select().from(users).where(eq(users.email, email));
-        if (!user) return null;
+        if (!user?.password) return null;
 
-        // For credentials provider, we need to implement our own password check
-        // This is just a basic example - you should use proper password hashing
-        if (password === user.password) return user;
-        return null;
+        const isValidPassword = await compare(password, user.password);
+        if (!isValidPassword) return null;
+        
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
       },
     }),
   ],

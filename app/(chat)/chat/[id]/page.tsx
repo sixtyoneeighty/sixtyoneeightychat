@@ -9,7 +9,7 @@ import { convertToUIMessages } from "@/lib/utils";
 
 export default async function Page({ params }: { params: any }) {
   const { id } = params;
-  const chatFromDb = await getChatById({ id });
+  const [chatFromDb] = await getChatById({ id });
 
   if (!chatFromDb) {
     notFound();
@@ -17,7 +17,9 @@ export default async function Page({ params }: { params: any }) {
 
   // type casting and converting messages to UI messages
   const chat: Chat = {
-    ...chatFromDb,
+    id: chatFromDb.id,
+    created_at: chatFromDb.created_at,
+    user_id: chatFromDb.user_id,
     messages: convertToUIMessages(chatFromDb.messages as Array<CoreMessage>),
   };
 
@@ -27,7 +29,7 @@ export default async function Page({ params }: { params: any }) {
     return notFound();
   }
 
-  if (session.user.id !== chat.userId) {
+  if (session.user.id !== chat.user_id) {
     return notFound();
   }
 
